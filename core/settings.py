@@ -26,7 +26,12 @@ SECRET_KEY = 'django-insecure-+k&=r9x#1n64-5n!j5kr_9+mf=wff^tw@i#6tttw=jn0y!@m@+
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+# En hotelregis/core/settings.py
+ALLOWED_HOSTS = [
+    'hotelregis.onrender.com',  # Cambia esto por tu URL real de Render
+    'localhost',
+    '127.0.0.1',
+]
 
 
 # Application definition
