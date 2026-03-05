@@ -1,0 +1,41 @@
+databases:
+  - name: hotelregis-db
+    databaseName: hotelregis
+    user: hotelregis
+    plan: free                        # Cambia a "starter" o "standard" en producción
+
+services:
+  - type: web
+    name: hotelregis-app
+    env: python
+    plan: free                        # Cambia a "starter" cuando necesites más recursos
+    buildCommand: |
+      pip install -r requirements.txt
+      python manage.py collectstatic --no-input
+      python manage.py migrate
+    startCommand: gunicorn core.wsgi:application --workers 2 --timeout 120
+    healthCheckPath: /
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11"
+      - key: DJANGO_SETTINGS_MODULE
+        value: core.settings
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: ALLOWED_HOSTS
+        value: ".onrender.com"
+      - key: DATABASE_URL
+        fromDatabase:
+          name: hotelregis-db
+          property: connectionString
+      - key: DISABLE_COLLECTSTATIC
+        value: "0"
+
+    # ── Disco persistente para imágenes y videos subidos desde el admin ──
+    # SIN esto, cada redeploy borra todas las fotos y videos que hayas subido.
+    disk:
+      name: hotelregis-media
+      mountPath: /opt/render/project/src/media
+      sizeGB: 10                      # Ajusta según cuántos videos/fotos tengas
