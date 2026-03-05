@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotel Regis | Mexicali</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --gold: #c5a059;
+            --gold-light: #e0c47a;
+            --dark: #0f0f0f;
+            --dark-2: #1a1a1a;
+            --dark-3: #242424;
+            --cream: #f5f0e8;
+        }
+
+        * { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Jost', sans-serif;
+            background-color: var(--cream);
+            color: #1a1a1a;
+        }
+
+        .font-display { font-family: 'Cormorant Garamond', serif; }
+        .text-gold { color: var(--gold); }
+        .bg-gold { background-color: var(--gold); }
+        .border-gold { border-color: var(--gold); }
+        .bg-dark { background-color: var(--dark); }
+        .bg-dark-2 { background-color: var(--dark-2); }
+        .bg-dark-3 { background-color: var(--dark-3); }
+        .bg-cream { background-color: var(--cream); }
+
+        /* ---- NAVBAR ---- */
+        #navbar {
+            transition: background 0.4s, box-shadow 0.4s;
+        }
+        #navbar.scrolled {
+            background: rgba(15,15,15,0.97) !important;
+            box-shadow: 0 2px 24px rgba(0,0,0,0.4);
+        }
+
+        /* ---- HERO CAROUSEL ---- */
+        .hero-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transition: opacity 1.2s cubic-bezier(.4,0,.2,1);
+        }
+        .hero-slide.active { opacity: 1; }
+
+        .hero-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.4);
+            border: 1px solid var(--gold);
+            transition: all 0.3s;
+        }
+        .hero-dot.active {
+            background: var(--gold);
+            width: 28px;
+            border-radius: 4px;
+        }
+
+        /* ---- SECTIONS ---- */
+        .section-label {
+            font-family: 'Jost', sans-serif;
+            font-size: 0.7rem;
+            letter-spacing: 0.3em;
+            text-transform: uppercase;
+            color: var(--gold);
+        }
+
+        /* ---- ROOM CARDS ---- */
+        .room-card {
+            background: #fff;
+            border-radius: 2px;
+            overflow: hidden;
+            box-shadow: 0 4px 32px rgba(0,0,0,0.08);
+            transition: transform 0.4s cubic-bezier(.4,0,.2,1), box-shadow 0.4s;
+        }
+        .room-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 16px 48px rgba(0,0,0,0.14);
+        }
+
+        /* ---- GALLERY MOSAIC ---- */
+        .mosaic-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: 200px 200px;
+            gap: 6px;
+        }
+        .mosaic-grid .big {
+            grid-column: span 2;
+            grid-row: span 2;
+        }
+
+        /* ---- AMENITIES ---- */
+        .amenity-icon {
+            width: 48px; height: 48px;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gold);
+            font-size: 1.3rem;
+            transition: all 0.3s;
+        }
+        .amenity-card:hover .amenity-icon {
+            background: var(--gold);
+            color: #000;
+        }
+
+        /* ---- TESTIMONIALS ---- */
+        .testimonial-track {
+            display: flex;
+            transition: transform 0.6s cubic-bezier(.4,0,.2,1);
+        }
+        .testimonial-slide {
+            min-width: 100%;
+        }
+
+        /* ---- SEPARATORS ---- */
+        .ornament {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1.5rem 0;
+        }
+        .ornament::before, .ornament::after {
+            content: '';
+            flex: 1;
+            max-width: 120px;
+            height: 1px;
+            background: var(--gold);
+            opacity: 0.5;
+        }
+
+        /* ---- PARALLAX-LIKE ---- */
+        .parallax-section {
+            position: relative;
+            overflow: hidden;
+        }
+        .parallax-bg {
+            position: absolute;
+            inset: -40px;
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        /* ---- ANIMATIONS ---- */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeup { animation: fadeUp 0.9s ease both; }
+        .delay-1 { animation-delay: 0.15s; }
+        .delay-2 { animation-delay: 0.3s; }
+        .delay-3 { animation-delay: 0.45s; }
+
+        /* ---- GOLD BUTTON ---- */
+        .btn-gold {
+            display: inline-block;
+            padding: 0.85rem 2.5rem;
+            background: var(--gold);
+            color: #fff;
+            font-family: 'Jost', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            border: 1px solid var(--gold);
+            transition: all 0.3s;
+        }
+        .btn-gold:hover {
+            background: transparent;
+            color: var(--gold);
+        }
+        .btn-outline {
+            display: inline-block;
+            padding: 0.85rem 2.5rem;
+            background: transparent;
+            color: var(--gold);
+            font-family: 'Jost', sans-serif;
+            font-size: 0.78rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            border: 1px solid var(--gold);
+            transition: all 0.3s;
+        }
+        .btn-outline:hover {
+            background: var(--gold);
+            color: #fff;
+        }
+
+        /* ---- WHATSAPP FLOAT ---- */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            z-index: 999;
+            width: 60px; height: 60px;
+            background: #25d366;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 24px rgba(37,211,102,0.4);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+        .whatsapp-float:hover {
+            transform: scale(1.12);
+            box-shadow: 0 8px 32px rgba(37,211,102,0.6);
+        }
+
+        /* ---- SCROLLBAR ---- */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--dark); }
+        ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+    </style>
+</head>
+<body x-data>
+
+<!-- ═══════════════════════════════════════════ NAVBAR ═══════════════════════════════════════════ -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-transparent"
+     x-data="{ open: false }"
+     x-init="window.addEventListener('scroll', () => {
+        document.getElementById('navbar').classList.toggle('scrolled', window.scrollY > 80)
+     })">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+        <!-- Logo -->
+        <a href="#" class="flex flex-col leading-none">
+            <span class="font-display text-2xl text-white tracking-widest">HOTEL</span>
+            <span class="font-display text-gold text-3xl italic -mt-1">Regis</span>
+        </a>
+
+        <!-- Desktop Nav -->
+        <ul class="hidden md:flex gap-8 text-white text-xs tracking-widest uppercase">
+            <li><a href="#habitaciones" class="hover:text-gold transition">Habitaciones</a></li>
+            <li><a href="#restaurante" class="hover:text-gold transition">Restaurante</a></li>
+            <li><a href="#galeria" class="hover:text-gold transition">Galería</a></li>
+            <li><a href="#amenidades" class="hover:text-gold transition">Amenidades</a></li>
+            <li><a href="#contacto" class="hover:text-gold transition">Contacto</a></li>
+        </ul>
+
+        <!-- CTA -->
+        <a href="https://wa.me/{{ contacto.whatsapp_number }}" class="hidden md:block btn-gold text-sm">
+            Reservar
+        </a>
+
+        <!-- Mobile Toggle -->
+        <button @click="open = !open" class="md:hidden text-white text-2xl">☰</button>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div x-show="open" x-transition class="md:hidden bg-dark-2 px-6 py-6 space-y-4">
+        <a href="#habitaciones" @click="open=false" class="block text-white hover:text-gold transition text-sm uppercase tracking-widest">Habitaciones</a>
+        <a href="#restaurante" @click="open=false" class="block text-white hover:text-gold transition text-sm uppercase tracking-widest">Restaurante</a>
+        <a href="#galeria" @click="open=false" class="block text-white hover:text-gold transition text-sm uppercase tracking-widest">Galería</a>
+        <a href="#amenidades" @click="open=false" class="block text-white hover:text-gold transition text-sm uppercase tracking-widest">Amenidades</a>
+        <a href="#contacto" @click="open=false" class="block text-white hover:text-gold transition text-sm uppercase tracking-widest">Contacto</a>
+        <a href="https://wa.me/{{ contacto.whatsapp_number }}" class="btn-gold block text-center mt-4">Reservar</a>
+    </div>
+</nav>
+
+<!-- ═══════════════════════════════════════════ HERO ═══════════════════════════════════════════ -->
+<header class="relative h-screen overflow-hidden"
+        x-data="{
+            current: 0,
+            slides: [
+                {% for img in imagenes_hero %}
+                '{{ img.imagen.url }}'{% if not forloop.last %},{% endif %}
+                {% empty %}
+                'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1920&q=80',
+                'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1920&q=80',
+                'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=1920&q=80'
+                {% endfor %}
+            ],
+            init() {
+                setInterval(() => this.next(), 5500);
+            },
+            next() { this.current = (this.current + 1) % this.slides.length; },
+            prev() { this.current = this.current === 0 ? this.slides.length - 1 : this.current - 1; }
+        }"
+        x-init="init()">
+
+    <!-- Slides -->
+    <template x-for="(slide, i) in slides" :key="i">
+        <div class="hero-slide" :class="{ 'active': current === i }">
+            <img :src="slide" class="w-full h-full object-cover" alt="Hotel Regis">
+            <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-black/30 to-black/70"></div>
+        </div>
+    </template>
+
+    <!-- Content -->
+    <div class="relative z-10 h-full flex flex-col items-center justify-center text-center text-white px-6">
+        <div class="animate-fadeup">
+            <p class="section-label text-gold mb-6">Mexicali, Baja California</p>
+            <h1 class="font-display text-7xl md:text-9xl leading-none mb-4">Hotel<br><span class="italic text-gold">Regis</span></h1>
+            <div class="ornament"><span class="text-gold text-xl">✦</span></div>
+            <p class="text-lg md:text-xl font-light tracking-widest uppercase mb-10 text-white/80">Tradición · Confort · Hospitalidad</p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="https://wa.me/{{ contacto.whatsapp_number }}" class="btn-gold">Reservar Ahora</a>
+                <a href="#habitaciones" class="btn-outline">Ver Habitaciones</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Arrows -->
+    <button @click="prev()" class="absolute left-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 border border-white/40 text-white flex items-center justify-center hover:border-gold hover:text-gold transition">❮</button>
+    <button @click="next()" class="absolute right-6 top-1/2 -translate-y-1/2 z-20 w-12 h-12 border border-white/40 text-white flex items-center justify-center hover:border-gold hover:text-gold transition">❯</button>
+
+    <!-- Dots -->
+    <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+        <template x-for="(s, i) in slides" :key="i">
+            <button @click="current = i" class="hero-dot" :class="{ 'active': current === i }"></button>
+        </template>
+    </div>
+
+    <!-- Scroll Cue -->
+    <div class="absolute bottom-8 right-8 z-20 flex flex-col items-center gap-2 text-white/60">
+        <span class="text-[10px] tracking-[0.3em] uppercase rotate-90 origin-center mb-8">Scroll</span>
+        <div class="w-px h-12 bg-gold/50"></div>
+    </div>
+</header>
+
+<!-- ═══════════════════════════════════════════ STATS BAR ═══════════════════════════════════════════ -->
+<div class="bg-dark-2 border-y border-gold/20">
+    <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 divide-x divide-gold/20">
+        {% for stat in estadisticas %}
+        <div class="py-8 px-6 text-center">
+            <div class="font-display text-4xl text-gold">{{ stat.valor }}</div>
+            <div class="text-white/50 text-xs tracking-widest uppercase mt-1">{{ stat.etiqueta }}</div>
+        </div>
+        {% empty %}
+        <div class="py-8 px-6 text-center"><div class="font-display text-4xl text-gold">50+</div><div class="text-white/50 text-xs tracking-widest uppercase mt-1">Habitaciones</div></div>
+        <div class="py-8 px-6 text-center"><div class="font-display text-4xl text-gold">30</div><div class="text-white/50 text-xs tracking-widest uppercase mt-1">Años de Historia</div></div>
+        <div class="py-8 px-6 text-center"><div class="font-display text-4xl text-gold">★ 4.8</div><div class="text-white/50 text-xs tracking-widest uppercase mt-1">Calificación</div></div>
+        <div class="py-8 px-6 text-center"><div class="font-display text-4xl text-gold">24/7</div><div class="text-white/50 text-xs tracking-widest uppercase mt-1">Servicio al Huésped</div></div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════ HABITACIONES ═══════════════════════════════════════════ -->
+<section id="habitaciones" class="py-28 bg-cream">
+    <div class="max-w-7xl mx-auto px-6">
+
+        <div class="text-center mb-16">
+            <p class="section-label">Nuestras Habitaciones</p>
+            <h2 class="font-display text-5xl md:text-6xl mt-2">Espacios de <em class="text-gold">Confort</em></h2>
+            <div class="ornament"><span class="text-gold">✦</span></div>
+            <p class="text-gray-500 max-w-xl mx-auto text-sm leading-relaxed">Cada habitación ha sido diseñada para ofrecerte el descanso que mereces, combinando elegancia clásica con comodidades modernas.</p>
+        </div>
+
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for hab in habitaciones %}
+            <div class="room-card"
+                 x-data="{
+                     activeSlide: 0,
+                     slides: [
+                         '{{ hab.miniatura.url }}'
+                         {% for img in hab.imagenes.all %}
+                         , '{{ img.imagen.url }}'
+                         {% endfor %}
+                     ],
+                     next() { this.activeSlide = (this.activeSlide + 1) % this.slides.length; },
+                     prev() { this.activeSlide = this.activeSlide === 0 ? this.slides.length - 1 : this.activeSlide - 1; }
+                 }">
+
+                <!-- Image Carousel -->
+                <div class="relative h-72 overflow-hidden bg-gray-200">
+                    <template x-for="(slide, idx) in slides" :key="idx">
+                        <img :src="slide"
+                             x-show="activeSlide === idx"
+                             x-transition:enter="transition ease-in-out duration-700"
+                             x-transition:enter-start="opacity-0 scale-105"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="absolute w-full h-full object-cover"
+                             alt="">
+                    </template>
+
+                    <!-- Arrows -->
+                    <button @click="prev()" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-8 h-8 flex items-center justify-center hover:bg-gold transition text-sm z-10">❮</button>
+                    <button @click="next()" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/60 text-white w-8 h-8 flex items-center justify-center hover:bg-gold transition text-sm z-10">❯</button>
+
+                    <!-- Slide Count -->
+                    <div class="absolute bottom-3 right-3 bg-black/60 text-white text-xs px-2 py-1 z-10">
+                        <span x-text="activeSlide + 1"></span> / <span x-text="slides.length"></span>
+                    </div>
+
+                    <!-- Dots -->
+                    <div class="absolute bottom-3 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+                        <template x-for="(s, i) in slides" :key="i">
+                            <button @click="activeSlide = i"
+                                    class="w-1.5 h-1.5 rounded-full transition-all"
+                                    :class="activeSlide === i ? 'bg-gold w-4 rounded' : 'bg-white/60'"></button>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Info -->
+                <div class="p-6">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="font-display text-2xl">{{ hab.tipo }}</h3>
+                        <span class="text-gold font-display text-2xl">${{ hab.precio }}<small class="text-gray-400 text-xs font-sans">/noche</small></span>
+                    </div>
+                    <p class="text-gray-500 text-sm leading-relaxed mb-5">{{ hab.descripcion }}</p>
+
+                    <!-- Amenidades rápidas -->
+                    <div class="flex gap-3 text-xs text-gray-400 mb-5 flex-wrap">
+                        {% for amenidad in hab.amenidades.all %}
+                        <span class="flex items-center gap-1"><span class="text-gold">✓</span> {{ amenidad.nombre }}</span>
+                        {% empty %}
+                        <span class="flex items-center gap-1"><span class="text-gold">✓</span> WiFi</span>
+                        <span class="flex items-center gap-1"><span class="text-gold">✓</span> A/C</span>
+                        <span class="flex items-center gap-1"><span class="text-gold">✓</span> TV</span>
+                        {% endfor %}
+                    </div>
+
+                    <a href="https://wa.me/{{ contacto.whatsapp_number }}?text=Hola,%20quiero%20reservar%20{{ hab.tipo }}"
+                       class="btn-gold w-full text-center block text-xs">Reservar Esta Habitación</a>
+                </div>
+            </div>
+            {% empty %}
+            <!-- Placeholder cards si no hay datos Django todavía -->
+            {% for i in "123" %}
+            <div class="room-card">
+                <div class="h-72 bg-gray-300 animate-pulse"></div>
+                <div class="p-6">
+                    <div class="h-4 bg-gray-200 rounded mb-3 w-3/4 animate-pulse"></div>
+                    <div class="h-3 bg-gray-100 rounded mb-2 animate-pulse"></div>
+                    <div class="h-3 bg-gray-100 rounded mb-4 w-2/3 animate-pulse"></div>
+                    <div class="h-10 bg-gray-200 rounded animate-pulse"></div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ RESTAURANTE ═══════════════════════════════════════════ -->
+<section id="restaurante" class="bg-dark py-28">
+    <div class="max-w-7xl mx-auto px-6">
+
+        <div class="grid lg:grid-cols-2 gap-16 items-center mb-16">
+            <div>
+                <p class="section-label mb-4">Dentro del Hotel</p>
+                <h2 class="font-display text-5xl md:text-6xl text-white mb-2">Restaurante</h2>
+                <h3 class="font-display text-4xl italic text-gold mb-6">Villa Don Nacho</h3>
+                <div class="w-16 h-px bg-gold mb-8"></div>
+                <p class="text-white/60 leading-relaxed mb-6">Ubicado en el corazón del hotel, nuestro restaurante ofrece los sabores más auténticos de la región. Desde el amanecer con nuestros desayunos tradicionales hasta la noche con cortes de carne de primera calidad.</p>
+                <p class="text-white/60 leading-relaxed mb-8">Una experiencia gastronómica que ha deleitado a Mexicali por décadas.</p>
+                <div class="grid grid-cols-3 gap-4 mb-8">
+                    <div class="border border-gold/30 p-4 text-center">
+                        <div class="text-gold text-2xl mb-1">☀</div>
+                        <div class="text-white/80 text-xs uppercase tracking-widest">Desayunos</div>
+                        <div class="text-white/40 text-xs mt-1">7am – 11am</div>
+                    </div>
+                    <div class="border border-gold/30 p-4 text-center">
+                        <div class="text-gold text-2xl mb-1">⚑</div>
+                        <div class="text-white/80 text-xs uppercase tracking-widest">Cortes</div>
+                        <div class="text-white/40 text-xs mt-1">1pm – 9pm</div>
+                    </div>
+                    <div class="border border-gold/30 p-4 text-center">
+                        <div class="text-gold text-2xl mb-1">♨</div>
+                        <div class="text-white/80 text-xs uppercase tracking-widest">Antojitos</div>
+                        <div class="text-white/40 text-xs mt-1">Todo el día</div>
+                    </div>
+                </div>
+                <a href="https://wa.me/{{ contacto.whatsapp_number }}?text=Quiero%20hacer%20una%20reservación%20en%20el%20restaurante"
+                   class="btn-gold">Reservar Mesa</a>
+            </div>
+
+            <!-- Galería restaurante con carrusel grande -->
+            <div x-data="{
+                     current: 0,
+                     slides: [
+                         {% for item in galeria_restaurante %}
+                         '{{ item.imagen.url }}'{% if not forloop.last %},{% endif %}
+                         {% empty %}
+                         'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=900&q=80',
+                         'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=900&q=80',
+                         'https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=900&q=80'
+                         {% endfor %}
+                     ],
+                     init() { setInterval(() => this.current = (this.current + 1) % this.slides.length, 4000); }
+                 }" x-init="init()">
+                <div class="relative aspect-[4/3] overflow-hidden">
+                    <template x-for="(slide, i) in slides" :key="i">
+                        <img :src="slide"
+                             x-show="current === i"
+                             x-transition:enter="transition duration-1000"
+                             x-transition:enter-start="opacity-0 scale-110"
+                             x-transition:enter-end="opacity-100 scale-100"
+                             class="absolute w-full h-full object-cover"
+                             alt="Restaurante Villa Don Nacho">
+                    </template>
+
+                    <!-- Thumbnails -->
+                    <div class="absolute bottom-0 left-0 right-0 flex gap-1 p-2 bg-gradient-to-t from-black/60">
+                        <template x-for="(s, i) in slides" :key="i">
+                            <button @click="current = i"
+                                    class="flex-1 h-12 overflow-hidden opacity-60 hover:opacity-100 transition"
+                                    :class="{ 'opacity-100 ring-1 ring-gold': current === i }">
+                                <img :src="s" class="w-full h-full object-cover">
+                            </button>
+                        </template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ GALERÍA ═══════════════════════════════════════════ -->
+<section id="galeria" class="py-28 bg-cream">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <p class="section-label">Imágenes del Hotel</p>
+            <h2 class="font-display text-5xl md:text-6xl mt-2">Galería <em class="text-gold">Visual</em></h2>
+            <div class="ornament"><span class="text-gold">✦</span></div>
+        </div>
+
+        <!-- Filtros de categoría -->
+        <div x-data="{ cat: 'todos' }" class="space-y-8">
+            <div class="flex flex-wrap gap-3 justify-center">
+                {% for categoria in categorias_galeria %}
+                <button @click="cat = '{{ categoria.slug }}'"
+                        :class="cat === '{{ categoria.slug }}' ? 'bg-gold text-white' : 'border border-gold text-gold hover:bg-gold hover:text-white'"
+                        class="px-5 py-2 text-xs tracking-widest uppercase transition">
+                    {{ categoria.nombre }}
+                </button>
+                {% empty %}
+                <button @click="cat = 'todos'" :class="cat === 'todos' ? 'bg-gold text-white' : 'border border-gold text-gold hover:bg-gold hover:text-white'" class="px-5 py-2 text-xs tracking-widest uppercase transition">Todos</button>
+                <button @click="cat = 'hotel'" :class="cat === 'hotel' ? 'bg-gold text-white' : 'border border-gold text-gold hover:bg-gold hover:text-white'" class="px-5 py-2 text-xs tracking-widest uppercase transition">Hotel</button>
+                <button @click="cat = 'habitaciones'" :class="cat === 'habitaciones' ? 'bg-gold text-white' : 'border border-gold text-gold hover:bg-gold hover:text-white'" class="px-5 py-2 text-xs tracking-widest uppercase transition">Habitaciones</button>
+                <button @click="cat = 'restaurante'" :class="cat === 'restaurante' ? 'bg-gold text-white' : 'border border-gold text-gold hover:bg-gold hover:text-white'" class="px-5 py-2 text-xs tracking-widest uppercase transition">Restaurante</button>
+                {% endfor %}
+            </div>
+
+            <!-- Grid de Galería + Lightbox -->
+            <div x-data="{
+                    open: false,
+                    current: 0,
+                    images: [
+                        {% for img in galeria_general %}
+                        { src: '{{ img.imagen.url }}', cat: '{{ img.categoria.slug }}' }{% if not forloop.last %},{% endif %}
+                        {% empty %}
+                        { src: 'https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=800&q=80', cat: 'hotel' },
+                        { src: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?auto=format&fit=crop&w=800&q=80', cat: 'habitaciones' },
+                        { src: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&w=800&q=80', cat: 'habitaciones' },
+                        { src: 'https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=800&q=80', cat: 'hotel' },
+                        { src: 'https://images.unsplash.com/photo-1414235077428-338989a2e8c0?auto=format&fit=crop&w=800&q=80', cat: 'restaurante' },
+                        { src: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80', cat: 'restaurante' },
+                        { src: 'https://images.unsplash.com/photo-1455587734955-081b22074882?auto=format&fit=crop&w=800&q=80', cat: 'hotel' },
+                        { src: 'https://images.unsplash.com/photo-1584132967334-10e028bd69f7?auto=format&fit=crop&w=800&q=80', cat: 'habitaciones' }
+                        {% endfor %}
+                    ],
+                    get filtered() {
+                        return cat === 'todos' ? this.images : this.images.filter(i => i.cat === cat);
+                    },
+                    openLightbox(i) { this.current = i; this.open = true; }
+                }">
+
+                <div class="columns-2 md:columns-3 lg:columns-4 gap-3 space-y-3">
+                    <template x-for="(img, i) in filtered" :key="i">
+                        <div @click="openLightbox(i)"
+                             class="overflow-hidden cursor-zoom-in break-inside-avoid group">
+                            <img :src="img.src"
+                                 class="w-full object-cover transition-transform duration-700 group-hover:scale-110"
+                                 alt="">
+                        </div>
+                    </template>
+                </div>
+
+                <!-- Lightbox -->
+                <div x-show="open"
+                     x-transition:enter="transition duration-200"
+                     x-transition:enter-start="opacity-0"
+                     x-transition:enter-end="opacity-100"
+                     @keydown.escape.window="open = false"
+                     @click.self="open = false"
+                     class="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-4">
+
+                    <button @click="open = false" class="absolute top-6 right-6 text-white/60 hover:text-white text-3xl">✕</button>
+                    <button @click="current = current === 0 ? filtered.length - 1 : current - 1"
+                            class="absolute left-4 md:left-8 text-white/60 hover:text-white text-4xl">❮</button>
+                    <button @click="current = (current + 1) % filtered.length"
+                            class="absolute right-4 md:right-8 text-white/60 hover:text-white text-4xl">❯</button>
+
+                    <img :src="filtered[current]?.src"
+                         class="max-h-[85vh] max-w-[85vw] object-contain"
+                         alt="">
+
+                    <div class="absolute bottom-6 text-white/40 text-sm">
+                        <span x-text="current + 1"></span> / <span x-text="filtered.length"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ AMENIDADES ═══════════════════════════════════════════ -->
+<section id="amenidades" class="bg-dark-2 py-28">
+    <div class="max-w-7xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <p class="section-label">Lo que incluye tu estancia</p>
+            <h2 class="font-display text-5xl md:text-6xl text-white mt-2">Nuestras <em class="text-gold">Amenidades</em></h2>
+            <div class="ornament"><span class="text-gold">✦</span></div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            {% for amenidad in amenidades %}
+            <div class="amenity-card text-center p-8 border border-white/10 hover:border-gold/40 transition group">
+                <div class="amenity-icon mx-auto mb-4">{{ amenidad.icono }}</div>
+                <h4 class="text-white font-semibold text-sm mb-2">{{ amenidad.nombre }}</h4>
+                <p class="text-white/40 text-xs">{{ amenidad.descripcion }}</p>
+            </div>
+            {% empty %}
+            {% for item in "12345678" %}
+            <div class="amenity-card text-center p-8 border border-white/10 hover:border-gold/40 transition group">
+                <div class="amenity-icon mx-auto mb-4">
+                    {% if forloop.counter == 1 %}🌐
+                    {% elif forloop.counter == 2 %}❄
+                    {% elif forloop.counter == 3 %}🅿
+                    {% elif forloop.counter == 4 %}🍳
+                    {% elif forloop.counter == 5 %}🏊
+                    {% elif forloop.counter == 6 %}💼
+                    {% elif forloop.counter == 7 %}📺
+                    {% else %}🔒{% endif %}
+                </div>
+                <h4 class="text-white font-semibold text-sm mb-2">
+                    {% if forloop.counter == 1 %}WiFi Gratis
+                    {% elif forloop.counter == 2 %}Aire Acondicionado
+                    {% elif forloop.counter == 3 %}Estacionamiento
+                    {% elif forloop.counter == 4 %}Desayuno Incluido
+                    {% elif forloop.counter == 5 %}Alberca
+                    {% elif forloop.counter == 6 %}Centro de Negocios
+                    {% elif forloop.counter == 7 %}Smart TV
+                    {% else %}Caja Fuerte{% endif %}
+                </h4>
+                <p class="text-white/40 text-xs">Disponible para todos los huéspedes</p>
+            </div>
+            {% endfor %}
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ TESTIMONIOS ═══════════════════════════════════════════ -->
+<section class="py-28 bg-cream">
+    <div class="max-w-4xl mx-auto px-6">
+        <div class="text-center mb-16">
+            <p class="section-label">Lo que dicen nuestros huéspedes</p>
+            <h2 class="font-display text-5xl md:text-6xl mt-2">Experiencias <em class="text-gold">Reales</em></h2>
+            <div class="ornament"><span class="text-gold">✦</span></div>
+        </div>
+
+        <div x-data="{
+                 current: 0,
+                 testimonios: [
+                     {% for t in testimonios %}
+                     { nombre: '{{ t.nombre }}', texto: '{{ t.texto|escapejs }}', estrellas: {{ t.estrellas }}, ciudad: '{{ t.ciudad }}' }{% if not forloop.last %},{% endif %}
+                     {% empty %}
+                     { nombre: 'María García', texto: 'Una experiencia increíble. Las habitaciones son amplias, limpias y el personal es muy amable. El restaurante Villa Don Nacho es simplemente exquisito.', estrellas: 5, ciudad: 'Tijuana, BC' },
+                     { nombre: 'Carlos Mendoza', texto: 'Perfecto para viajes de negocios. Ubicación inmejorable, WiFi excelente y el servicio es de primera. Ya es mi hotel favorito en Mexicali.', estrellas: 5, ciudad: 'CDMX' },
+                     { nombre: 'Ana Ruiz', texto: 'El desayuno incluido es delicioso. Me encantó la atención personalizada. Definitivamente regresaré con toda mi familia.', estrellas: 5, ciudad: 'Hermosillo' }
+                     {% endfor %}
+                 ],
+                 init() { setInterval(() => this.current = (this.current + 1) % this.testimonios.length, 5000); }
+             }" x-init="init()">
+
+            <div class="relative overflow-hidden">
+                <template x-for="(t, i) in testimonios" :key="i">
+                    <div x-show="current === i"
+                         x-transition:enter="transition duration-600"
+                         x-transition:enter-start="opacity-0 translate-x-8"
+                         x-transition:enter-end="opacity-100 translate-x-0"
+                         class="text-center px-8">
+                        <div class="text-gold text-4xl mb-6">"</div>
+                        <p class="font-display text-2xl md:text-3xl text-gray-800 italic leading-relaxed mb-8" x-text="t.texto"></p>
+                        <div class="flex justify-center gap-1 mb-4">
+                            <template x-for="s in t.estrellas" :key="s">
+                                <span class="text-gold text-xl">★</span>
+                            </template>
+                        </div>
+                        <p class="font-semibold text-sm uppercase tracking-widest" x-text="t.nombre"></p>
+                        <p class="text-gray-400 text-xs mt-1" x-text="t.ciudad"></p>
+                    </div>
+                </template>
+            </div>
+
+            <div class="flex justify-center gap-2 mt-10">
+                <template x-for="(t, i) in testimonios" :key="i">
+                    <button @click="current = i"
+                            class="hero-dot"
+                            :class="{ 'active': current === i }"></button>
+                </template>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ PARALLAX CTA ═══════════════════════════════════════════ -->
+<section class="parallax-section h-96">
+    <div class="parallax-bg"
+         style="background-image: url('https://images.unsplash.com/photo-1520250497591-112f2f40a3f4?auto=format&fit=crop&w=1920&q=80'); filter: brightness(0.35);"></div>
+    <div class="relative z-10 h-full flex flex-col items-center justify-center text-center text-white px-6">
+        <p class="section-label mb-4">Reservaciones directas</p>
+        <h2 class="font-display text-5xl md:text-6xl mb-6">¿Listo para <em class="text-gold">hospedarte?</em></h2>
+        <p class="text-white/60 mb-10 text-sm">Escríbenos por WhatsApp y te respondemos en minutos</p>
+        <a href="https://wa.me/{{ contacto.whatsapp_number }}" class="btn-gold text-base px-12 py-4">
+            📱 Reservar por WhatsApp
+        </a>
+    </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ CONTACTO / FOOTER ═══════════════════════════════════════════ -->
+<footer id="contacto" class="bg-dark">
+    <!-- Info Strip -->
+    <div class="border-b border-white/10 py-16">
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-4 gap-10">
+
+            <!-- Marca -->
+            <div class="md:col-span-1">
+                <div class="font-display text-2xl text-white tracking-widest">HOTEL</div>
+                <div class="font-display text-3xl italic text-gold -mt-1 mb-4">Regis</div>
+                <p class="text-white/40 text-xs leading-relaxed">Tradición y hospitalidad en el corazón de Mexicali, Baja California.</p>
+            </div>
+
+            <!-- Contacto -->
+            <div>
+                <h5 class="text-gold text-xs uppercase tracking-widest mb-4">Contacto</h5>
+                <div class="space-y-2 text-white/60 text-sm">
+                    <p>📍 {{ contacto.direccion }}</p>
+                    <p>📞 {{ contacto.telefono }}</p>
+                    <p>✉ {{ contacto.email }}</p>
+                </div>
+            </div>
+
+            <!-- Horarios -->
+            <div>
+                <h5 class="text-gold text-xs uppercase tracking-widest mb-4">Horarios</h5>
+                <div class="space-y-2 text-white/60 text-sm">
+                    <p>Check-in: <span class="text-white">3:00 PM</span></p>
+                    <p>Check-out: <span class="text-white">12:00 PM</span></p>
+                    <p>Recepción: <span class="text-white">24/7</span></p>
+                    <p>Restaurante: <span class="text-white">7am – 10pm</span></p>
+                </div>
+            </div>
+
+            <!-- Mapa/Redes -->
+            <div>
+                <h5 class="text-gold text-xs uppercase tracking-widest mb-4">Encuéntranos</h5>
+                <div class="space-y-3">
+                    <a href="https://maps.google.com/?q=32.6465,-115.4461"
+                       class="block w-full btn-outline text-center text-xs py-2">Ver en Google Maps</a>
+                    <a href="{{ contacto.facebook_url }}"
+                       class="block w-full btn-outline text-center text-xs py-2">Facebook</a>
+                    <a href="https://wa.me/{{ contacto.whatsapp_number }}"
+                       class="block w-full btn-gold text-center text-xs py-2">WhatsApp</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Copyright -->
+    <div class="py-6 text-center text-white/30 text-xs tracking-widest">
+        © {% now "Y" %} Hotel Regis Mexicali. Todos los derechos reservados.
+    </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════ FLOAT WHATSAPP ═══════════════════════════════════════════ -->
+<a href="https://wa.me/{{ contacto.whatsapp_number }}" class="whatsapp-float" title="Escríbenos por WhatsApp">
+    <svg class="w-7 h-7" fill="white" viewBox="0 0 24 24">
+        <path d="M12.031 6.172c-2.315 0-4.191 1.876-4.191 4.191 0 .829.249 1.59.673 2.227l-.656 2.401 2.456-.644c.615.373 1.334.597 2.103.597 2.315 0 4.191-1.876 4.191-4.191 0-2.315-1.876-4.191-4.191-4.191zm2.859 5.957c-.115.336-.667.653-.923.693-.255.039-.569.066-1.558-.336-1.228-.501-2.019-1.748-2.081-1.829-.062-.081-.51-.678-.51-1.295s.322-.921.437-1.045c.115-.124.251-.155.335-.155s.168.002.241.006c.078.004.183-.029.286.223.106.259.365.892.397.957.032.066.053.142.01.229s-.064.142-.128.217c-.064.075-.136.168-.195.226-.066.066-.135.138-.058.27.077.132.342.565.735.915.506.45.933.59 1.07.658.136.068.216.056.296-.036s.345-.403.438-.541c.092-.138.185-.116.31-.07.126.046.801.377.94.446s.231.103.265.161c.034.059.034.341-.081.677z"/>
+        <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45z"/>
+    </svg>
+</a>
+
+</body>
+</html>
