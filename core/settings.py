@@ -28,11 +28,18 @@ DEBUG = True
 
 # En hotelregis/core/settings.py
 ALLOWED_HOSTS = [
-    'hotelregis.onrender.com',  # Cambia esto por tu URL real de Render
-    'localhost',
-    '127.0.0.1',
+    'hotel-regis.com',          # Dominio oficial del cliente
+    'www.hotel-regis.com',      # Versión con www por si acaso
+    'hotelregis.onrender.com',  # Tu URL de Render
+    'localhost',                # Local
+    '127.0.0.1',                # Local IP
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    'https://hotel-regis.com',
+    'https://www.hotel-regis.com',
+    'https://hotelregis.onrender.com',
+]
 
 # Application definition
 
