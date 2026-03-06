@@ -179,6 +179,7 @@
             text-transform: uppercase;
             border: 1px solid var(--gold);
             transition: all 0.3s;
+            cursor: pointer;
         }
         .btn-gold:hover {
             background: transparent;
@@ -195,6 +196,7 @@
             text-transform: uppercase;
             border: 1px solid var(--gold);
             transition: all 0.3s;
+            cursor: pointer;
         }
         .btn-outline:hover {
             background: var(--gold);
@@ -225,9 +227,150 @@
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: var(--dark); }
         ::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 3px; }
+
+        /* ---- CONTACT MODAL ---- */
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(40px) scale(0.96); }
+            to   { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-panel {
+            animation: modalIn 0.45s cubic-bezier(.4,0,.2,1) both;
+        }
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.25rem;
+            border: 1px solid rgba(197,160,89,0.2);
+            transition: border-color 0.3s, background 0.3s;
+        }
+        .contact-item:hover {
+            border-color: var(--gold);
+            background: rgba(197,160,89,0.05);
+        }
+        .contact-item-icon {
+            width: 42px;
+            height: 42px;
+            border: 1px solid var(--gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            font-size: 1.1rem;
+        }
+        .modal-overlay {
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+        }
+        .gold-divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin: 1.25rem 0;
+        }
+        .gold-divider::before, .gold-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(to right, transparent, rgba(197,160,89,0.4), transparent);
+        }
     </style>
 </head>
-<body x-data>
+<!-- ═══════════════════════════════ GLOBAL CONTACT MODAL STATE ═══════════════════════════════ -->
+<body x-data="{ contactModal: false, modalTitle: 'Reservar Estancia' }">
+
+<!-- ═══════════════════════════════ CONTACT MODAL ═══════════════════════════════ -->
+<div x-show="contactModal"
+     x-transition:enter="transition duration-200"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition duration-200"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     @keydown.escape.window="contactModal = false"
+     @click.self="contactModal = false"
+     class="modal-overlay fixed inset-0 bg-black/80 z-[9999] flex items-center justify-center p-4"
+     style="display:none">
+
+    <div class="modal-panel bg-[#0f0f0f] border border-gold/30 w-full max-w-lg relative">
+
+        <!-- Header -->
+        <div class="border-b border-gold/20 px-8 py-6 flex items-start justify-between">
+            <div>
+                <p class="text-gold text-[0.65rem] tracking-[0.3em] uppercase mb-1">Información de Contacto</p>
+                <h2 class="font-display text-3xl text-white" x-text="modalTitle"></h2>
+            </div>
+            <button @click="contactModal = false"
+                    class="text-white/40 hover:text-gold transition text-2xl leading-none mt-1">✕</button>
+        </div>
+
+        <!-- Body -->
+        <div class="px-8 py-7 space-y-3">
+
+            <p class="text-white/50 text-xs leading-relaxed mb-5">
+                Contáctanos directamente por cualquiera de los siguientes medios y con gusto te atenderemos para hacer tu reservación.
+            </p>
+
+            <!-- Tel 1 -->
+            <a href="tel:6865663435" class="contact-item block">
+                <div class="contact-item-icon text-gold">📞</div>
+                <div>
+                    <p class="text-white/40 text-[0.65rem] uppercase tracking-widest mb-0.5">Teléfono 1</p>
+                    <p class="text-white font-semibold tracking-wider text-base">686 566-3435</p>
+                </div>
+            </a>
+
+            <!-- Tel 2 -->
+            <a href="tel:6868018802" class="contact-item block">
+                <div class="contact-item-icon text-gold">📞</div>
+                <div>
+                    <p class="text-white/40 text-[0.65rem] uppercase tracking-widest mb-0.5">Teléfono 2</p>
+                    <p class="text-white font-semibold tracking-wider text-base">686 801-8802</p>
+                </div>
+            </a>
+
+            <!-- Email -->
+            <a href="mailto:inforegis@hotel-regis.com" class="contact-item block">
+                <div class="contact-item-icon text-gold">✉</div>
+                <div>
+                    <p class="text-white/40 text-[0.65rem] uppercase tracking-widest mb-0.5">Correo Electrónico</p>
+                    <p class="text-white font-semibold tracking-wide text-sm">inforegis@hotel-regis.com</p>
+                </div>
+            </a>
+
+            <div class="gold-divider"><span class="text-gold/50 text-xs">✦</span></div>
+
+            <!-- Ubicación -->
+            <a href="https://maps.app.goo.gl/fL9QQyX44dzxgU4d8" target="_blank" class="contact-item block">
+                <div class="contact-item-icon text-gold">📍</div>
+                <div>
+                    <p class="text-white/40 text-[0.65rem] uppercase tracking-widest mb-0.5">Ubicación</p>
+                    <p class="text-white text-sm leading-snug">Blvd. Benito Juárez 2150, Insurgentes,<br>21280 Mexicali, B.C.</p>
+                </div>
+            </a>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="border-t border-gold/20 px-8 py-5 flex gap-3">
+            <a href="tel:6865663435"
+               class="btn-gold flex-1 text-center text-xs py-3">
+                Llamar Ahora
+            </a>
+            <a href="mailto:inforegis@hotel-regis.com"
+               class="btn-outline flex-1 text-center text-xs py-3">
+                Enviar Correo
+            </a>
+        </div>
+
+        <!-- Decorative corner accents -->
+        <span class="absolute top-0 left-0 w-4 h-4 border-t border-l border-gold/60"></span>
+        <span class="absolute top-0 right-0 w-4 h-4 border-t border-r border-gold/60"></span>
+        <span class="absolute bottom-0 left-0 w-4 h-4 border-b border-l border-gold/60"></span>
+        <span class="absolute bottom-0 right-0 w-4 h-4 border-b border-r border-gold/60"></span>
+    </div>
+</div>
 
 <!-- ═══════════════════════════════════════════ NAVBAR ═══════════════════════════════════════════ -->
 <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 bg-transparent"
@@ -253,9 +396,9 @@
         </ul>
 
         <!-- CTA -->
-        <a href="https://wa.me/{{ contacto.whatsapp_number }}" class="hidden md:block btn-gold text-sm">
+        <button @click="contactModal = true; modalTitle = 'Reservar Estancia'" class="hidden md:block btn-gold text-sm">
             Reservar
-        </a>
+        </button>
 
         <!-- Mobile Toggle -->
         <button @click="open = !open" class="md:hidden text-white text-2xl">☰</button>
@@ -268,7 +411,7 @@
         <a href="#galeria" @click="open=false" class="block text-white hover:text-gold transition text-sm uppercase tracking-widest">Galería</a>
         <a href="#amenidades" @click="open=false" class="block text-white hover:text-gold transition text-sm uppercase tracking-widest">Amenidades</a>
         <a href="#contacto" @click="open=false" class="block text-white hover:text-gold transition text-sm uppercase tracking-widest">Contacto</a>
-        <a href="https://wa.me/{{ contacto.whatsapp_number }}" class="btn-gold block text-center mt-4">Reservar</a>
+        <button @click="open=false; contactModal=true; modalTitle='Reservar Estancia'" class="btn-gold block text-center mt-4 w-full">Reservar</button>
     </div>
 </nav>
 
@@ -309,7 +452,7 @@
             <div class="ornament"><span class="text-gold text-xl">✦</span></div>
             <p class="text-lg md:text-xl font-light tracking-widest uppercase mb-10 text-white/80">Tradición · Confort · Hospitalidad</p>
             <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="https://wa.me/{{ contacto.whatsapp_number }}" class="btn-gold">Reservar Ahora</a>
+                <button @click="contactModal = true; modalTitle = 'Reservar Ahora'" class="btn-gold">Reservar Ahora</button>
                 <a href="#habitaciones" class="btn-outline">Ver Habitaciones</a>
             </div>
         </div>
@@ -426,8 +569,8 @@
                         {% endfor %}
                     </div>
 
-                    <a href="https://wa.me/{{ contacto.whatsapp_number }}?text=Hola,%20quiero%20reservar%20{{ hab.tipo }}"
-                       class="btn-gold w-full text-center block text-xs">Reservar Esta Habitación</a>
+                    <button @click="contactModal = true; modalTitle = 'Reservar · {{ hab.tipo }}'"
+                            class="btn-gold w-full text-center block text-xs">Reservar Esta Habitación</button>
                 </div>
             </div>
             {% empty %}
@@ -477,8 +620,8 @@
                         <div class="text-white/40 text-xs mt-1">Todo el día</div>
                     </div>
                 </div>
-                <a href="https://wa.me/{{ contacto.whatsapp_number }}?text=Quiero%20hacer%20una%20reservación%20en%20el%20restaurante"
-                   class="btn-gold">Reservar Mesa</a>
+                <button @click="contactModal = true; modalTitle = 'Reservar Mesa · Villa Don Nacho'"
+                        class="btn-gold">Reservar Mesa</button>
             </div>
 
             <!-- Galería restaurante con carrusel grande -->
@@ -635,8 +778,8 @@
                     {% elif forloop.counter == 2 %}❄
                     {% elif forloop.counter == 3 %}🅿
                     {% elif forloop.counter == 4 %}🍳
-                    {% elif forloop.counter == 6 %}💼
-                    {% elif forloop.counter == 7 %}📺
+                    {% elif forloop.counter == 5 %}💼
+                    {% elif forloop.counter == 6 %}📺
                     {% else %}🔒{% endif %}
                 </div>
                 <h4 class="text-white font-semibold text-sm mb-2">
@@ -644,8 +787,8 @@
                     {% elif forloop.counter == 2 %}Aire Acondicionado
                     {% elif forloop.counter == 3 %}Estacionamiento
                     {% elif forloop.counter == 4 %}Desayuno Incluido
-                    {% elif forloop.counter == 6 %}Centro de Negocios
-                    {% elif forloop.counter == 7 %}Smart TV
+                    {% elif forloop.counter == 5 %}Centro de Negocios
+                    {% elif forloop.counter == 6 %}Smart TV
                     {% else %}Caja Fuerte{% endif %}
                 </h4>
                 <p class="text-white/40 text-xs">Disponible para todos los huéspedes</p>
@@ -717,10 +860,11 @@
     <div class="relative z-10 h-full flex flex-col items-center justify-center text-center text-white px-6">
         <p class="section-label mb-4">Reservaciones directas</p>
         <h2 class="font-display text-5xl md:text-6xl mb-6">¿Listo para <em class="text-gold">hospedarte?</em></h2>
-        <p class="text-white/60 mb-10 text-sm">Escríbenos por WhatsApp y te respondemos en minutos</p>
-        <a href="https://wa.me/{{ contacto.whatsapp_number }}" class="btn-gold text-base px-12 py-4">
-            📱 Reservar por WhatsApp
-        </a>
+        <p class="text-white/60 mb-10 text-sm">Contáctanos directamente y te respondemos a la brevedad</p>
+        <button @click="contactModal = true; modalTitle = 'Reservar Ahora'"
+                class="btn-gold text-base px-12 py-4">
+            📞 Reservar Ahora
+        </button>
     </div>
 </section>
 
@@ -741,9 +885,10 @@
             <div>
                 <h5 class="text-gold text-xs uppercase tracking-widest mb-4">Contacto</h5>
                 <div class="space-y-2 text-white/60 text-sm">
-                    <p>📍 {{ contacto.direccion }}</p>
-                    <p>📞 {{ contacto.telefono }}</p>
-                    <p>✉ {{ contacto.email }}</p>
+                    <p>📍 Blvd. Benito Juárez 2150, Insurgentes, 21280 Mexicali, B.C.</p>
+                    <p>📞 <a href="tel:6865663435" class="hover:text-gold transition">686 566-3435</a></p>
+                    <p>📞 <a href="tel:6868018802" class="hover:text-gold transition">686 801-8802</a></p>
+                    <p>✉ <a href="mailto:inforegis@hotel-regis.com" class="hover:text-gold transition">inforegis@hotel-regis.com</a></p>
                 </div>
             </div>
 
@@ -766,8 +911,8 @@
                        class="block w-full btn-outline text-center text-xs py-2">Ver en Google Maps</a>
                     <a href="{{ contacto.facebook_url }}"
                        class="block w-full btn-outline text-center text-xs py-2">Facebook</a>
-                    <a href="https://wa.me/{{ contacto.whatsapp_number }}"
-                       class="block w-full btn-gold text-center text-xs py-2">WhatsApp</a>
+                    <button @click="contactModal = true; modalTitle = 'Información de Contacto'"
+                            class="block w-full btn-gold text-center text-xs py-2">Contacto</button>
                 </div>
             </div>
         </div>
@@ -779,13 +924,15 @@
     </div>
 </footer>
 
-<!-- ═══════════════════════════════════════════ FLOAT WHATSAPP ═══════════════════════════════════════════ -->
-<a href="https://wa.me/{{ contacto.whatsapp_number }}" class="whatsapp-float" title="Escríbenos por WhatsApp">
+<!-- ═══════════════════════════════════════════ FLOAT CONTACT ═══════════════════════════════════════════ -->
+<button @click="contactModal = true; modalTitle = 'Reservar Estancia'"
+        class="whatsapp-float"
+        title="Contáctanos para reservar"
+        style="background: var(--gold);">
     <svg class="w-7 h-7" fill="white" viewBox="0 0 24 24">
-        <path d="M12.031 6.172c-2.315 0-4.191 1.876-4.191 4.191 0 .829.249 1.59.673 2.227l-.656 2.401 2.456-.644c.615.373 1.334.597 2.103.597 2.315 0 4.191-1.876 4.191-4.191 0-2.315-1.876-4.191-4.191-4.191zm2.859 5.957c-.115.336-.667.653-.923.693-.255.039-.569.066-1.558-.336-1.228-.501-2.019-1.748-2.081-1.829-.062-.081-.51-.678-.51-1.295s.322-.921.437-1.045c.115-.124.251-.155.335-.155s.168.002.241.006c.078.004.183-.029.286.223.106.259.365.892.397.957.032.066.053.142.01.229s-.064.142-.128.217c-.064.075-.136.168-.195.226-.066.066-.135.138-.058.27.077.132.342.565.735.915.506.45.933.59 1.07.658.136.068.216.056.296-.036s.345-.403.438-.541c.092-.138.185-.116.31-.07.126.046.801.377.94.446s.231.103.265.161c.034.059.034.341-.081.677z"/>
-        <path d="M20.52 3.449C18.24 1.245 15.24 0 12.045 0 5.463 0 .104 5.334.101 11.893c0 2.096.549 4.14 1.595 5.945L0 24l6.335-1.652c1.746.943 3.71 1.444 5.71 1.447h.006c6.585 0 11.946-5.336 11.949-11.896 0-3.176-1.24-6.165-3.48-8.45z"/>
+        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
     </svg>
-</a>
+</button>
 
 </body>
 </html>
